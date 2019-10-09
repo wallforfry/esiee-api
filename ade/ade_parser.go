@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 	"time"
+	"wallforfry/esiee-api/aurion"
 	"wallforfry/esiee-api/utils"
 )
 
@@ -45,6 +47,14 @@ func (e Event) String() string {
 }
 
 func (e Event) ToEventAde() EventAde {
+	code := e.Name
+
+	reg := regexp.MustCompile(`^(.*):`)
+	codes := reg.FindStringSubmatch(code)
+	if len(codes) != 0 {
+		code = codes[1]
+	}
+
 	event := EventAde{
 		Name:      e.Name,
 		StartHour: e.StartHour,
@@ -55,6 +65,7 @@ func (e Event) ToEventAde() EventAde {
 		CreatedAt: e.Creation,
 		UpdatedAt: e.LastUpdate,
 		Info:      e.Info,
+		UniteName: aurion.GetUnite(code).Label,
 	}
 
 	for _, resource := range e.Resources {
@@ -110,7 +121,7 @@ func (e EventAde) ToOldFormat() OldFormat {
 	end, _ := time.Parse("02/01/2006 15:04", fmt.Sprintf("%s %s", e.Date, e.EndHour))
 	endString := end.Format("2006-01-02T15:04:05.000Z")
 	rooms := strings.Join(e.Classrooms, ", ")
-	unite := e.Unite
+	unite := e.UniteName
 	description := fmt.Sprintf("%s\n%s", strings.Join(e.Trainees, "\n"), strings.Join(e.Instructors, "\n"))
 	return OldFormat{Name: e.Name, Start: startString, End: endString, Rooms: rooms, Prof: strings.Join(e.Instructors, ", "), Unite: unite, Description: description}
 }

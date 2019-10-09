@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/hhkbp2/go-logging"
+	"github.com/spf13/viper"
 	"os"
 	"reflect"
 	"strings"
@@ -28,7 +29,12 @@ func InitLogger(name string) logging.Logger {
 	formatter := logging.NewStandardFormatter(format, dateFormat)
 
 	handler.SetFormatter(formatter)
-	logger.SetLevel(logging.LevelInfo)
+	debug := viper.GetBool("global.debug")
+	if debug {
+		logger.SetLevel(logging.LevelDebug)
+	} else {
+		logger.SetLevel(logging.LevelInfo)
+	}
 	logger.AddHandler(handler)
 	return logger
 }

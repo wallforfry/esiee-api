@@ -21,7 +21,7 @@ func DownloadXml() {
 	err := viper.ReadInConfig() // Find and read the config file
 	utils.CheckError(logger, "Can't read config file", err)
 
-	projectId := viper.GetInt("ade.project_id")
+	projectId := viper.GetInt("ade.projectId")
 
 	client := resty.New()
 
@@ -76,9 +76,9 @@ func DownloadXml() {
 	/*
 	   client := resty.New()
 
-	   project_id := viper.GetInt("ade.project_id")
+	   projectId := viper.GetInt("ade.projectId")
 
-	   url := "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=147,738,739,743,744,2841,5757,746,747,748,2781,2782,3286,682,683,684,685,659,665,674,680,681,727,733,785,998,1295,2555,2743,5215,5688,731,734,735,736,740,741,742,780,782,1852,2584,4350,5321,786,787,788,789,790,2270,2275,2277,2278,2282,704,745,773,775,776,4937,728,2117,772,719,2112,183,185,196,4051,4679,2072,2074,2272,2276,2089,154,713,163,167,700,701,705,707,708,712,714,715,716,724,725,726,737,749,758,759,1057,1858,1908,2090,2108,2281,428,717,720,721,722,2265,2274,2279&projectId="+strconv.Itoa(project_id)+"&calType=ical&nbWeeks=12"
+	   url := "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=147,738,739,743,744,2841,5757,746,747,748,2781,2782,3286,682,683,684,685,659,665,674,680,681,727,733,785,998,1295,2555,2743,5215,5688,731,734,735,736,740,741,742,780,782,1852,2584,4350,5321,786,787,788,789,790,2270,2275,2277,2278,2282,704,745,773,775,776,4937,728,2117,772,719,2112,183,185,196,4051,4679,2072,2074,2272,2276,2089,154,713,163,167,700,701,705,707,708,712,714,715,716,724,725,726,737,749,758,759,1057,1858,1908,2090,2108,2281,428,717,720,721,722,2265,2274,2279&projectId="+strconv.Itoa(projectId)+"&calType=ical&nbWeeks=12"
 
 	   resp, err := client.R().
 	       EnableTrace().

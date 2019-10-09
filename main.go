@@ -51,6 +51,7 @@ func main() {
 				"ade.xml":             utils.FileInfos("ade.xml"),
 				"calendar.json":       utils.FileInfos("calendar.json"),
 				"BDE_MES_GROUPES.csv": utils.FileInfos("BDE_MES_GROUPES.csv"),
+				"BDE_UNITES.csv":      utils.FileInfos("BDE_UNITES.csv"),
 			},
 		})
 	})
@@ -106,20 +107,44 @@ func main() {
 			username := context.Param("mail")
 			context.JSON(200, aurion.GetUserGroups(username))
 		})
+
+		v2.GET("/events/:name", func(context *gin.Context) {
+			name := context.Param("name")
+			var events []ade.EventAde
+			for _, event := range ade.GetEvents() {
+				if event.Unite == name {
+					events = append(events, event)
+				}
+			}
+			context.JSON(200, events)
+		})
+
+		v2.GET("/unite/:name", func(context *gin.Context) {
+			name := context.Param("name")
+			context.JSON(200, aurion.GetUnite(name))
+		})
 	}
 
 	gocron.Every(viper.GetUint64("global.refreshInterval")).Minutes().Do(updateLocalCache)
 
 	utils.Init()
 
-	if viper.GetBool("global.debug") {
-		r.Run()
-	} else {
+	viper.SetConfigName("config") // name of config file (without extension)
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")    // optionally look for config in the working directory
+	err := viper.ReadInConfig() // Find and read the config file
+	utils.CheckError(logger, "Can't read config file", err)
+
+	debug := viper.GetBool("global.debug")
+
+	logger.Infof("Running in debug : %t", debug)
+
+	if viper.GetBool("global.refreshCache") {
 		updateLocalCache()
-
 		go r.Run() // listen and serve on 0.0.0.0:8080
-
 		<-gocron.Start()
+	} else {
+		r.Run()
 	}
 
 }
