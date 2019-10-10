@@ -26,6 +26,10 @@ build-docker:
 	@docker build -t wallforfry/esiee-api:$(shell $(MAKE) version) -f Dockerfile .
 	@docker tag wallforfry/esiee-api:$(shell $(MAKE) version) wallforfry/esiee-api:latest
 
+.PHONY: doc # Generate doc
+doc:
+	@swag init
+
 .PHONY: help # Generate list of goals with descriptions
 help:
 	@echo "Available goals:\n"

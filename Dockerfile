@@ -36,6 +36,9 @@ COPY --from=builder /go/src/application/BDE_UNITES.csv /
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /
+ENV TZ=Europe/Paris
+ENV ZONEINFO=/zoneinfo.zip
 COPY --from=builder /go/bin/main /main
 USER daemon
 ENTRYPOINT ["/main"]

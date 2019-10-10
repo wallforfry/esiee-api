@@ -1,0 +1,326 @@
+basePath: /
+definitions:
+  ade.EventAde:
+    properties:
+      classrooms:
+        items:
+          type: string
+        type: array
+      color:
+        description: r,g,b
+        type: string
+      created_at:
+        type: string
+      date:
+        type: string
+      duration:
+        type: integer
+      end_hour:
+        type: string
+      info:
+        type: string
+      instructors:
+        items:
+          type: string
+        type: array
+      majors:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      start_hour:
+        type: string
+      trainees:
+        items:
+          type: string
+        type: array
+      unite:
+        type: string
+      unite_name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  ade.OldFormat:
+    properties:
+      description:
+        type: string
+      end:
+        type: string
+      name:
+        type: string
+      prof:
+        type: string
+      rooms:
+        type: string
+      start:
+        type: string
+      unite:
+        type: string
+    type: object
+  aurion.GroupEntry:
+    properties:
+      groups:
+        items:
+          type: string
+        type: array
+      unite:
+        type: string
+    type: object
+  aurion.Unite:
+    properties:
+      code:
+        type: string
+      label:
+        type: string
+    type: object
+host: ade.wallforfry.fr
+info:
+  contact: {}
+  description: API pour ade et aurion
+  license: {}
+  title: ESIEE API
+  version: 0.3.0
+paths:
+  /agenda:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Get user agenda by username or e-mail
+      parameters:
+      - description: Username or e-mail
+        in: formData
+        name: mail
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of events
+          schema:
+            items:
+              $ref: '#/definitions/ade.OldFormat'
+            type: array
+      summary: Get user agenda
+      tags:
+      - Old
+  /agenda/{mail}:
+    get:
+      consumes:
+      - application/json
+      description: Get user agenda by username or e-mail
+      parameters:
+      - description: Username or e-mail
+        in: path
+        name: mail
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of events
+          schema:
+            items:
+              $ref: '#/definitions/ade.OldFormat'
+            type: array
+      summary: Get user agenda
+      tags:
+      - Old
+  /api/ade-esiee/agenda:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Get user agenda by username or e-mail
+      parameters:
+      - description: Username or e-mail
+        in: formData
+        name: mail
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of events
+          schema:
+            items:
+              $ref: '#/definitions/ade.OldFormat'
+            type: array
+      summary: Get user agenda
+      tags:
+      - Old
+  /api/ade-esiee/agenda/{mail}:
+    get:
+      consumes:
+      - application/json
+      description: Get user agenda by username or e-mail
+      parameters:
+      - description: Username or e-mail
+        in: path
+        name: mail
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of events
+          schema:
+            items:
+              $ref: '#/definitions/ade.OldFormat'
+            type: array
+      summary: Get user agenda
+      tags:
+      - Old
+  /api/rooms/{hour}:
+    get:
+      consumes:
+      - application/json
+      description: Get all the free rooms at now or now + X hours
+      parameters:
+      - description: Hour shift
+        in: path
+        name: hour
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Array of free rooms
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Get free rooms
+      tags:
+      - Rooms
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: Do ping to check api
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"message": "pong"}'
+          schema:
+            type: string
+      summary: Ask for ping get pong
+      tags:
+      - Core
+  /status:
+    get:
+      consumes:
+      - application/json
+      description: Got API informations about local files and uptime
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: API informations
+          schema:
+            $ref: '#/definitions/string'
+      summary: Get API status
+      tags:
+      - Core
+  /v2/agenda/{mail}:
+    get:
+      consumes:
+      - application/json
+      description: Get user agenda by username or e-mail
+      parameters:
+      - description: Username or e-mail
+        in: path
+        name: mail
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of events
+          schema:
+            items:
+              $ref: '#/definitions/ade.EventAde'
+            type: array
+      summary: Get user agenda
+      tags:
+      - V2
+      - Agenda
+  /v2/events/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get all events of specific unite with its code
+      parameters:
+      - description: Unite Code
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of events
+          schema:
+            items:
+              $ref: '#/definitions/ade.EventAde'
+            type: array
+      summary: Get events of specific unite
+      tags:
+      - V2
+      - Agenda
+  /v2/groups/{mail}:
+    get:
+      consumes:
+      - application/json
+      description: Get user groups by username or e-mail
+      parameters:
+      - description: Username or e-mail
+        in: path
+        name: mail
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of groups
+          schema:
+            items:
+              $ref: '#/definitions/aurion.GroupEntry'
+            type: array
+      summary: Get user groups
+      tags:
+      - V2
+      - Aurion
+  /v2/unite/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get unite code and label
+      parameters:
+      - description: Unite Code
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Unite informations
+          schema:
+            items:
+              $ref: '#/definitions/aurion.Unite'
+            type: array
+      summary: Get unite information
+      tags:
+      - V2
+      - Aurion
+swagger: "2.0"

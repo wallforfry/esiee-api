@@ -56,13 +56,13 @@ func (a UniteRow) CSV() []string {
 }
 
 type Unite struct {
-	Code  string
-	Label string
+	Code  string `json:"code"`
+	Label string `json:"label"`
 }
 
 type GroupEntry struct {
-	Unite  string
-	Groups []string
+	Unite  string   `json:"unite"`
+	Groups []string `json:"groups"`
 }
 
 func (g GroupEntry) String() string {

@@ -8,19 +8,13 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"time"
 	"wallforfry/esiee-api/utils"
 )
 
 var logger = utils.InitLogger("ade-logger")
 
 func DownloadXml() {
-
-	viper.SetConfigName("config") // name of config file (without extension)
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")    // optionally look for config in the working directory
-	err := viper.ReadInConfig() // Find and read the config file
-	utils.CheckError(logger, "Can't read config file", err)
-
 	projectId := viper.GetInt("ade.projectId")
 
 	client := resty.New()
@@ -160,4 +154,27 @@ func GetEvents() []EventAde {
 
 	//logger.Info("Writing calendar.json")
 	return calendar
+}
+
+func GetEventsAt(offset int) []string {
+	allRooms := viper.GetStringSlice("global.rooms")
+	events := GetEvents()
+
+	var used []string
+
+	loc, err := time.LoadLocation("Europe/Paris")
+	utils.CheckError(logger, "Can't load location", err)
+	//now := time.Date(2019,8, 22,19,0,0,1, loc)
+	now := time.Now()
+	at := now.Add(1 * time.Nanosecond).Add(time.Hour * time.Duration(offset)).In(loc)
+
+	for _, event := range events {
+		if event.IsAt(at) {
+			for _, room := range event.Classrooms {
+				used = utils.AppendIfMissing(used, room)
+			}
+		}
+	}
+
+	return utils.Difference(allRooms, used)
 }

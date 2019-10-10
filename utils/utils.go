@@ -56,18 +56,63 @@ func contains(a interface{}, e interface{}) bool {
 	return false
 }
 
-func Intersect(a interface{}, b interface{}) []interface{} {
-	set := make([]interface{}, 0)
-	av := reflect.ValueOf(a)
+func containsCaseInsensitive(a []string, e string) bool {
+	var b []string
 
-	for i := 0; i < av.Len(); i++ {
-		el := av.Index(i).Interface()
-		if contains(b, el) {
+	for _, i := range a {
+		b = append(b, strings.ToUpper(i))
+	}
+
+	return contains(b, strings.ToUpper(e))
+}
+
+func Intersect(a []string, b []string) []string {
+	var set []string
+
+	for _, el := range a {
+		if containsCaseInsensitive(b, el) {
 			set = append(set, el)
 		}
 	}
-
 	return set
+}
+
+/*
+func Intersect(a interface{}, b interface{}) []interface{} {
+    set := make([]interface{}, 0)
+    av := reflect.ValueOf(a)
+
+    for i := 0; i < av.Len(); i++ {
+        el := av.Index(i).Interface()
+        if containsCaseInsensitive(b, el) {
+            set = append(set, el)
+        }
+    }
+    return set
+}*/
+
+func Difference(a, b []string) (diff []string) {
+	m := make(map[string]bool)
+
+	for _, item := range b {
+		m[item] = true
+	}
+
+	for _, item := range a {
+		if _, ok := m[item]; !ok {
+			diff = append(diff, item)
+		}
+	}
+	return
+}
+
+func AppendIfMissing(slice []string, i string) []string {
+	for _, ele := range slice {
+		if ele == i {
+			return slice
+		}
+	}
+	return append(slice, i)
 }
 
 func InterfaceToString(t []interface{}) []string {

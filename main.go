@@ -5,21 +5,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jasonlvhit/gocron"
 	"github.com/spf13/viper"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 	"wallforfry/esiee-api/ade"
 	"wallforfry/esiee-api/aurion"
-	"wallforfry/esiee-api/matcher"
+	_ "wallforfry/esiee-api/docs"
 	"wallforfry/esiee-api/utils"
 )
 
 var logger = utils.InitLogger("main-logger")
 
 const ParameterValueSeparatorCharacter = ","
-
-func ping(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "pong",
-	})
-}
 
 func updateLocalCache() {
 	logger.Info("Updating local cache")
@@ -29,6 +25,12 @@ func updateLocalCache() {
 	logger.Info("Cache is up-to-date")
 }
 
+// @title ESIEE API
+// @version 0.4.0
+// @description API pour ade et aurion
+
+// @host ade.wallforfry.fr
+// @BasePath /
 func main() {
 	/*inputString := flag.String("input-string", "", "A sample input string. (Required)")
 	flag.Parse()
@@ -44,85 +46,35 @@ func main() {
 
 	r.GET("/ping", ping)
 
-	r.GET("/status", func(context *gin.Context) {
-		context.JSON(200, gin.H{
-			"uptime": utils.Uptime().String(),
-			"files": gin.H{
-				"ade.xml":             utils.FileInfos("ade.xml"),
-				"calendar.json":       utils.FileInfos("calendar.json"),
-				"BDE_MES_GROUPES.csv": utils.FileInfos("BDE_MES_GROUPES.csv"),
-				"BDE_UNITES.csv":      utils.FileInfos("BDE_UNITES.csv"),
-			},
-		})
-	})
+	r.GET("/status", status)
+
+	url := ginSwagger.URL("/swagger/doc.json") // The url pointing to API definition
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	//Old api
 	old := r.Group("/api/ade-esiee")
 	{
-		old.POST("/agenda", func(context *gin.Context) {
-			username := context.PostForm("mail")
-			events := matcher.GetOldFormatEvents(username)
-			if events == nil {
-				events = []ade.OldFormat{}
-			}
-			context.JSON(200, events)
-		})
-		old.GET("/agenda/:mail", func(context *gin.Context) {
-			username := context.Param("mail")
-			events := matcher.GetOldFormatEvents(username)
-			if events == nil {
-				events = []ade.OldFormat{}
-			}
-			context.JSON(200, events)
-		})
+		old.POST("/agenda", postAgendaOld)
+		old.GET("/agenda/:mail", getAgendaOld)
 	}
 
-	r.POST("/agenda", func(context *gin.Context) {
-		username := context.PostForm("mail")
-		events := matcher.GetOldFormatEvents(username)
-		if events == nil {
-			events = []ade.OldFormat{}
-		}
-		context.JSON(200, events)
-	})
-	r.GET("/agenda/:mail", func(context *gin.Context) {
-		username := context.Param("mail")
-		events := matcher.GetOldFormatEvents(username)
-		if events == nil {
-			events = []ade.OldFormat{}
-		}
-		context.JSON(200, events)
-	})
+	r.POST("/agenda", postAgendaOldShort)
+	r.GET("/agenda/:mail", getAgendaOldShort)
+
+	r.GET("/rooms", rooms)
+	r.GET("/rooms/:hour", rooms)
 
 	// New api
 
 	v2 := r.Group("/v2")
 	{
-		v2.GET("/agenda/:mail", func(context *gin.Context) {
-			username := context.Param("mail")
-			context.JSON(200, matcher.GetEvents(username))
-		})
+		v2.GET("/agenda/:mail", getAgenda)
 
-		v2.GET("/groups/:mail", func(context *gin.Context) {
-			username := context.Param("mail")
-			context.JSON(200, aurion.GetUserGroups(username))
-		})
+		v2.GET("/groups/:mail", getGroups)
 
-		v2.GET("/events/:name", func(context *gin.Context) {
-			name := context.Param("name")
-			var events []ade.EventAde
-			for _, event := range ade.GetEvents() {
-				if event.Unite == name {
-					events = append(events, event)
-				}
-			}
-			context.JSON(200, events)
-		})
+		v2.GET("/events/:name", getEventFilterByUnite)
 
-		v2.GET("/unite/:name", func(context *gin.Context) {
-			name := context.Param("name")
-			context.JSON(200, aurion.GetUnite(name))
-		})
+		v2.GET("/unite/:name", getUniteInfo)
 	}
 
 	gocron.Every(viper.GetUint64("global.refreshInterval")).Minutes().Do(updateLocalCache)

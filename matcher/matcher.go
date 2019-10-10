@@ -29,7 +29,7 @@ func GetEvents(username string) []ade.EventAde {
 			if event.Unite != group.Unite {
 				continue
 			}
-			inter := utils.InterfaceToString(utils.Intersect(event.Trainees, group.Groups))
+			inter := utils.Intersect(event.Trainees, group.Groups)
 			if len(inter) == 0 {
 				continue
 			}
