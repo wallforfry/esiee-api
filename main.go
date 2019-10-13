@@ -26,7 +26,7 @@ func updateLocalCache() {
 }
 
 // @title ESIEE API
-// @version 0.4.0
+// @version 0.5.0
 // @description API pour ade et aurion
 
 // @host ade.wallforfry.fr
@@ -63,6 +63,8 @@ func main() {
 
 	r.GET("/rooms", rooms)
 	r.GET("/rooms/:hour", rooms)
+	r.GET("/api/rooms", rooms)
+	r.GET("/api/rooms/:hour", rooms)
 
 	// New api
 
@@ -77,8 +79,6 @@ func main() {
 		v2.GET("/unite/:name", getUniteInfo)
 	}
 
-	gocron.Every(viper.GetUint64("global.refreshInterval")).Minutes().Do(updateLocalCache)
-
 	utils.Init()
 
 	viper.SetConfigName("config") // name of config file (without extension)
@@ -92,11 +92,11 @@ func main() {
 	logger.Infof("Running in debug : %t", debug)
 
 	if viper.GetBool("global.refreshCache") {
+		gocron.Every(viper.GetUint64("global.refreshInterval")).Minutes().Do(updateLocalCache)
+		logger.Info("Starting Gocron")
 		updateLocalCache()
-		go r.Run() // listen and serve on 0.0.0.0:8080
-		<-gocron.Start()
-	} else {
-		r.Run()
+		gocron.Start()
 	}
 
+	r.Run()
 }

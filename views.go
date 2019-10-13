@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"strconv"
 	"wallforfry/esiee-api/ade"
 	"wallforfry/esiee-api/aurion"
@@ -33,7 +34,10 @@ func ping(c *gin.Context) {
 // @Router /status [get]
 func status(context *gin.Context) {
 	context.JSON(200, gin.H{
-		"uptime": utils.Uptime().String(),
+		"version":             viper.GetString("global.version"),
+		"uptime":              utils.Uptime().String(),
+		"refreshCacheEnabled": viper.GetBool("global.refreshCache"),
+		"refreshInterval":     viper.GetInt("global.refreshInterval"),
 		"files": gin.H{
 			"ade.xml":             utils.FileInfos("ade.xml"),
 			"calendar.json":       utils.FileInfos("calendar.json"),

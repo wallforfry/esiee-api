@@ -19,10 +19,10 @@ func DownloadXml() {
 
 	client := resty.New()
 
-	base_url := "https://planif.esiee.fr/jsp/webapi"
+	baseUrl := "https://planif.esiee.fr/jsp/webapi"
 
 	logger.Info("Connecting to ADE")
-	url := base_url + "?function=connect&login=lecteur1&password="
+	url := baseUrl + "?function=connect&login=lecteur1&password="
 
 	resp, err := client.R().
 		EnableTrace().
@@ -33,7 +33,7 @@ func DownloadXml() {
 	session_id := pat.FindStringSubmatch(resp.String())[1]
 
 	logger.Info("Setting ADE project id")
-	url = base_url + "?sessionId=" + session_id + "&function=setProject&projectId=" + strconv.Itoa(projectId)
+	url = baseUrl + "?sessionId=" + session_id + "&function=setProject&projectId=" + strconv.Itoa(projectId)
 
 	resp, err = client.R().
 		EnableTrace().
@@ -41,7 +41,7 @@ func DownloadXml() {
 	utils.CheckError(logger, "Can't set ADE project id", err)
 
 	logger.Info("Retrieving ADE xml file")
-	url = base_url + "?sessionId=" + session_id + "&function=getEvents&tree=true&detail=8"
+	url = baseUrl + "?sessionId=" + session_id + "&function=getEvents&tree=true&detail=8"
 
 	resp, err = client.R().
 		EnableTrace().
@@ -58,7 +58,7 @@ func DownloadXml() {
 	logger.Infof("Write %d bytes", n)
 
 	logger.Info("Disconnecting from ADE")
-	url = base_url + "?function=disconnect"
+	url = baseUrl + "?function=disconnect"
 
 	resp, err = client.R().
 		EnableTrace().
