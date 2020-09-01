@@ -81,7 +81,7 @@ info:
   description: API pour ade et aurion
   license: {}
   title: ESIEE API
-  version: 0.6.0
+  version: 0.6.1
 paths:
   /agenda:
     post:

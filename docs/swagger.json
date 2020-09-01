@@ -5,7 +5,7 @@
         "title": "ESIEE API",
         "contact": {},
         "license": {},
-        "version": "0.6.0"
+        "version": "0.6.1"
     },
     "host": "ade.wallforfry.fr",
     "basePath": "/",
