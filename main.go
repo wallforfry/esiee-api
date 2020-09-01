@@ -41,6 +41,18 @@ func main() {
 		logger.Infof("Parsed input value: %s", inputStringPart)
 	}*/
 
+	viper.SetConfigName("config") // name of config file (without extension)
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")    // optionally look for config in the working directory
+	err := viper.ReadInConfig() // Find and read the config file
+	utils.CheckError(logger, "Can't read config file", err)
+
+	debug := viper.GetBool("global.debug")
+
+	if !debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	r := gin.Default()
 	r.Use(cors.Default())
 
@@ -80,14 +92,6 @@ func main() {
 	}
 
 	utils.Init()
-
-	viper.SetConfigName("config") // name of config file (without extension)
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")    // optionally look for config in the working directory
-	err := viper.ReadInConfig() // Find and read the config file
-	utils.CheckError(logger, "Can't read config file", err)
-
-	debug := viper.GetBool("global.debug")
 
 	logger.Infof("Running in debug : %t", debug)
 
