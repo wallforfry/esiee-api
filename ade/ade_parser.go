@@ -56,16 +56,20 @@ func (e Event) ToEventAde() EventAde {
 	}
 
 	event := EventAde{
-		Name:      e.Name,
-		StartHour: e.StartHour,
-		EndHour:   e.EndHour,
-		Date:      e.Date,
-		Duration:  e.Duration,
-		Color:     e.Color,
-		CreatedAt: e.Creation,
-		UpdatedAt: e.LastUpdate,
-		Info:      e.Info,
-		UniteName: aurion.GetUnite(code).Label,
+		Name:        e.Name,
+		StartHour:   e.StartHour,
+		EndHour:     e.EndHour,
+		Date:        e.Date,
+		Duration:    e.Duration,
+		Color:       e.Color,
+		CreatedAt:   e.Creation,
+		UpdatedAt:   e.LastUpdate,
+		Info:        e.Info,
+		UniteName:   aurion.GetUnite(code).Label,
+		Trainees:    []string{},
+		Instructors: []string{},
+		Classrooms:  []string{},
+		Majors:      []string{},
 	}
 
 	for _, resource := range e.Resources {
