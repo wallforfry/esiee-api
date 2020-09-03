@@ -150,6 +150,40 @@
                 }
             }
         },
+        "/api/ics/{mail}": {
+            "get": {
+                "description": "Get user agenda by username or e-mail",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "V2",
+                    "Agenda",
+                    "ICS"
+                ],
+                "summary": "Get user agenda in ICS format",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username or e-mail",
+                        "name": "mail",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ICS Calendar",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/rooms/{hour}": {
             "get": {
                 "description": "Get all the free rooms at now or now + X hours",

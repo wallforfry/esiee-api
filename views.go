@@ -4,8 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"strconv"
+	"strings"
 	"wallforfry/esiee-api/ade"
 	"wallforfry/esiee-api/aurion"
+	"wallforfry/esiee-api/ics"
 	"wallforfry/esiee-api/matcher"
 	"wallforfry/esiee-api/utils"
 )
@@ -152,6 +154,27 @@ func getAgendaOldShort(context *gin.Context) {
 func getAgenda(context *gin.Context) {
 	username := context.Param("mail")
 	context.JSON(200, matcher.GetEvents(username))
+}
+
+// getICS godoc
+// @Summary Get user agenda in ICS format
+// @Description Get user agenda by username or e-mail
+// @Tags V2,Agenda,ICS
+// @Param mail path string true "Username or e-mail"
+// @Accept json
+// @Produce json
+// @Success 200 {string} string "ICS Calendar"
+// @Router /v2/ics/{mail} [get]
+// @Router /api/ics/{mail} [get]
+func getICS(context *gin.Context) {
+	username := context.Param("mail")
+	username = strings.ReplaceAll(username, ".ics", "")
+	events := matcher.GetEvents(username)
+	if len(events) != 0 {
+		context.String(200, "%s", ics.EventsToICS(events).Serialize())
+	} else {
+		context.String(500, "%s", "Error generating ICS")
+	}
 }
 
 // getGroups godoc

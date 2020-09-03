@@ -73,6 +73,8 @@ func main() {
 	r.POST("/agenda", postAgendaOldShort)
 	r.GET("/agenda/:mail", getAgendaOldShort)
 
+	r.GET("/api/ics/:mail", getICS)
+
 	r.GET("/rooms", rooms)
 	r.GET("/rooms/:hour", rooms)
 	r.GET("/api/rooms", rooms)
@@ -83,6 +85,8 @@ func main() {
 	v2 := r.Group("/v2")
 	{
 		v2.GET("/agenda/:mail", getAgenda)
+
+		v2.GET("/ics/:mail", getICS)
 
 		v2.GET("/groups/:mail", getGroups)
 

@@ -175,6 +175,29 @@ paths:
       summary: Get user agenda
       tags:
       - Old
+  /api/ics/{mail}:
+    get:
+      consumes:
+      - application/json
+      description: Get user agenda by username or e-mail
+      parameters:
+      - description: Username or e-mail
+        in: path
+        name: mail
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ICS Calendar
+          schema:
+            type: string
+      summary: Get user agenda in ICS format
+      tags:
+      - V2
+      - Agenda
+      - ICS
   /api/rooms/{hour}:
     get:
       consumes:
