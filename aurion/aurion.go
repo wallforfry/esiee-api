@@ -224,6 +224,7 @@ func GetUnite(code string) Unite {
 	defer groupsFile.Close()
 
 	reader := csv.NewReader(groupsFile)
+	reader.LazyQuotes = true
 
 	_, err = reader.Read()
 	utils.CheckError(logger, "Error reading BDE_UNITES.csv", err)
