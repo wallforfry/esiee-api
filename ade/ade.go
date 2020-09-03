@@ -149,6 +149,10 @@ func GetEvents() []EventAde {
 
 	byteValue, _ := ioutil.ReadAll(calendarFile)
 
+	if !json.Valid(byteValue) {
+		XmlToJson()
+	}
+
 	err = json.Unmarshal(byteValue, &calendar)
 	utils.CheckError(logger, "Can't unmarshall calendar.json", err)
 
