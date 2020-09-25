@@ -3,23 +3,24 @@ package matcher
 import (
 	"wallforfry/esiee-api/ade"
 	"wallforfry/esiee-api/aurion"
+	adeModels "wallforfry/esiee-api/models/ade"
 	"wallforfry/esiee-api/utils"
 )
 
-func convertToOldFormat(events []ade.EventAde) []ade.OldFormat {
-	var olds []ade.OldFormat
+func convertToOldFormat(events []adeModels.EventAde) []adeModels.OldFormat {
+	var olds []adeModels.OldFormat
 	for _, event := range events {
 		olds = append(olds, event.ToOldFormat())
 	}
 	return olds
 }
 
-func GetOldFormatEvents(username string) []ade.OldFormat {
+func GetOldFormatEvents(username string) []adeModels.OldFormat {
 	return convertToOldFormat(GetEvents(username))
 }
 
-func GetEvents(username string) []ade.EventAde {
-	var events []ade.EventAde
+func GetEvents(username string) []adeModels.EventAde {
+	var events []adeModels.EventAde
 
 	allEvents := ade.GetEvents()
 	groups := aurion.GetUserGroups(username)

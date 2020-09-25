@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+	"wallforfry/esiee-api/models/ade"
 	"wallforfry/esiee-api/utils"
 )
 
@@ -140,17 +141,18 @@ func DownloadXml() {
 	*/
 }
 
-func GetEvents() []EventAde {
+func GetEvents() []ade.EventAde {
 	calendarFile, err := os.OpenFile("calendar.json", os.O_RDONLY, os.ModePerm)
 	utils.CheckError(logger, "Can't open calendar.json", err)
 	defer calendarFile.Close()
 
-	var calendar []EventAde
+	var calendar []ade.EventAde
 
 	byteValue, _ := ioutil.ReadAll(calendarFile)
 
 	if !json.Valid(byteValue) {
 		XmlToJson()
+		byteValue, _ = ioutil.ReadAll(calendarFile)
 	}
 
 	err = json.Unmarshal(byteValue, &calendar)

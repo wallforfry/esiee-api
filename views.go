@@ -9,6 +9,7 @@ import (
 	"wallforfry/esiee-api/aurion"
 	"wallforfry/esiee-api/ics"
 	"wallforfry/esiee-api/matcher"
+	ade2 "wallforfry/esiee-api/models/ade"
 	"wallforfry/esiee-api/utils"
 )
 
@@ -83,7 +84,7 @@ func postAgendaOld(context *gin.Context) {
 	username := context.PostForm("mail")
 	events := matcher.GetOldFormatEvents(username)
 	if events == nil {
-		events = []ade.OldFormat{}
+		events = []ade2.OldFormat{}
 	}
 	context.JSON(200, events)
 }
@@ -101,7 +102,7 @@ func postAgendaOldShort(context *gin.Context) {
 	username := context.PostForm("mail")
 	events := matcher.GetOldFormatEvents(username)
 	if events == nil {
-		events = []ade.OldFormat{}
+		events = []ade2.OldFormat{}
 	}
 	context.JSON(200, events)
 }
@@ -119,7 +120,7 @@ func getAgendaOld(context *gin.Context) {
 	username := context.Param("mail")
 	events := matcher.GetOldFormatEvents(username)
 	if events == nil {
-		events = []ade.OldFormat{}
+		events = []ade2.OldFormat{}
 	}
 	context.JSON(200, events)
 }
@@ -137,7 +138,7 @@ func getAgendaOldShort(context *gin.Context) {
 	username := context.Param("mail")
 	events := matcher.GetOldFormatEvents(username)
 	if events == nil {
-		events = []ade.OldFormat{}
+		events = []ade2.OldFormat{}
 	}
 	context.JSON(200, events)
 }
@@ -202,7 +203,7 @@ func getGroups(context *gin.Context) {
 // @Router /v2/events/{name} [get]
 func getEventFilterByUnite(context *gin.Context) {
 	name := context.Param("name")
-	var events []ade.EventAde
+	var events []ade2.EventAde
 	for _, event := range ade.GetEvents() {
 		if event.Unite == name {
 			events = append(events, event)

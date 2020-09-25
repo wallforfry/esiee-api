@@ -11,63 +11,11 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"wallforfry/esiee-api/models/aurion"
 	"wallforfry/esiee-api/utils"
 )
 
 var logger = utils.InitLogger("aurion-parser")
-
-type GroupTable struct {
-	XMLName xml.Name   `xml:"table"`
-	Rows    []GroupRow `xml:"row"`
-}
-
-type GroupRow struct {
-	XMLName xml.Name `xml:"row",csv:"-"`
-	Login   string   `xml:"login.Individu",csv:"login.Individu"`
-	Mail    string   `xml:"Coordonnée.Coordonnée",csv:"Coordonnée.Coordonnée"`
-	Group   string   `xml:"Code.Groupe",csv:"Code.Groupe"`
-}
-
-func (a GroupRow) String() string {
-	return fmt.Sprintf("\t Username : %s, Email : %s, Groups : %s \n", a.Login, a.Mail, a.Group)
-}
-
-func (a GroupRow) CSV() []string {
-	return []string{a.Login, a.Mail, a.Group}
-}
-
-type UniteTable struct {
-	XMLName xml.Name   `xml:"table"`
-	Rows    []UniteRow `xml:"row"`
-}
-
-type UniteRow struct {
-	XMLName xml.Name `xml:"row",csv:"-"`
-	Code    string   `xml:"Code.Unité",csv:"Code.Unité"`
-	Label   string   `xml:"Libellé.Unité",csv:"Libellé.Unité"`
-}
-
-func (a UniteRow) String() string {
-	return fmt.Sprintf("Code : %s, Label : %s\n", a.Code, a.Label)
-}
-
-func (a UniteRow) CSV() []string {
-	return []string{a.Code, a.Label}
-}
-
-type Unite struct {
-	Code  string `json:"code"`
-	Label string `json:"label"`
-}
-
-type GroupEntry struct {
-	Unite  string   `json:"unite"`
-	Groups []string `json:"groups"`
-}
-
-func (g GroupEntry) String() string {
-	return fmt.Sprintf("%s %s\n", g.Unite, g.Groups)
-}
 
 func retrieveUnites(username string, password string) {
 	requestId := strconv.Itoa(viper.GetInt("aurion.unitesRequestId"))
@@ -91,7 +39,7 @@ func retrieveUnites(username string, password string) {
 		logger.Errorf("Aurion Api answers with %s code", resp.StatusCode())
 	}
 
-	var c UniteTable
+	var c aurion.UniteTable
 	err = xml.Unmarshal(resp.Body(), &c)
 	utils.CheckError(logger, "Can't unmarshall aurion xml", err)
 
@@ -136,7 +84,7 @@ func retrieveGroups(username string, password string) {
 		logger.Errorf("Aurion Api answers with %s code", resp.StatusCode())
 	}
 
-	var c GroupTable
+	var c aurion.GroupTable
 	err = xml.Unmarshal(resp.Body(), &c)
 	utils.CheckError(logger, "Can't unmarshall aurion xml", err)
 
@@ -166,7 +114,7 @@ func Aurion() {
 	retrieveUnites(username, password)
 }
 
-func transformGroup(aurionFormat string) GroupEntry {
+func transformGroup(aurionFormat string) aurion.GroupEntry {
 	adeFormat := aurionFormat
 
 	yearRe := regexp.MustCompile(`^\d\d_`)
@@ -178,15 +126,15 @@ func transformGroup(aurionFormat string) GroupEntry {
 	uniteRe := regexp.MustCompile(`^([^_]*)_([^_]*)_(.*)`)
 	result := uniteRe.FindStringSubmatch(adeFormat)
 	if len(result) == 0 {
-		return GroupEntry{Unite: adeFormat, Groups: []string{}}
+		return aurion.GroupEntry{Unite: adeFormat, Groups: []string{}}
 	}
 
 	unite := fmt.Sprintf("%s-%s", result[1], result[2])
-	return GroupEntry{Unite: unite, Groups: result[3:]}
+	return aurion.GroupEntry{Unite: unite, Groups: result[3:]}
 }
 
-func GetUserGroups(username string) []GroupEntry {
-	var groups []GroupEntry
+func GetUserGroups(username string) []aurion.GroupEntry {
+	var groups []aurion.GroupEntry
 
 	groupsFile, err := os.OpenFile("BDE_MES_GROUPES.csv", os.O_RDONLY, os.ModePerm)
 	utils.CheckError(logger, "Can't open BDE_MES_GROUPES.csv", err)
@@ -218,7 +166,7 @@ func GetUnites() {
 	retrieveUnites(username, password)
 }
 
-func GetUnite(code string) Unite {
+func GetUnite(code string) aurion.Unite {
 	groupsFile, err := os.OpenFile("BDE_UNITES.csv", os.O_RDONLY, os.ModePerm)
 	utils.CheckError(logger, "Can't open BDE_UNITES.csv", err)
 	defer groupsFile.Close()
@@ -238,8 +186,8 @@ func GetUnite(code string) Unite {
 
 		convertedCode := strings.ReplaceAll(record[0], "_", "-")
 		if convertedCode == code {
-			return Unite{Code: convertedCode, Label: record[1]}
+			return aurion.Unite{Code: convertedCode, Label: record[1]}
 		}
 	}
-	return Unite{Code: code, Label: code}
+	return aurion.Unite{Code: code, Label: code}
 }

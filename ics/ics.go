@@ -5,7 +5,7 @@ import (
 	ics "github.com/arran4/golang-ical"
 	"strings"
 	"time"
-	"wallforfry/esiee-api/ade"
+	"wallforfry/esiee-api/models/ade"
 )
 
 func EventsToICS(events []ade.EventAde) *ics.Calendar {
