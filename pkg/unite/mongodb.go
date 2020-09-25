@@ -12,7 +12,6 @@ type repo struct {
 	collection *mongo.Collection
 }
 
-//NewMongoRepository create new repository
 func NewMongoRepository(database *mongo.Database) Repository {
 	collection := database.Collection("unites")
 	return &repo{

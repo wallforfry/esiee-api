@@ -14,7 +14,6 @@ type Writer interface {
 	Store(unite *Unite) (*primitive.ObjectID, error)
 }
 
-//Repository repository interface
 type Repository interface {
 	Reader
 	Writer

@@ -59,13 +59,19 @@ definitions:
       unite:
         type: string
     type: object
-  aurion.GroupEntry:
+  group.Group:
     properties:
+      email:
+        type: string
       groups:
         items:
           type: string
         type: array
+      id:
+        type: string
       unite:
+        type: string
+      username:
         type: string
     type: object
   unite.Unite:
@@ -318,7 +324,7 @@ paths:
           description: List of groups
           schema:
             items:
-              $ref: '#/definitions/aurion.GroupEntry'
+              $ref: '#/definitions/group.Group'
             type: array
       summary: Get user groups
       tags:

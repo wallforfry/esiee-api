@@ -1,18 +1,14 @@
 package aurion
 
 import (
-	"encoding/csv"
 	"encoding/xml"
-	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"
-	"io"
-	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"wallforfry/esiee-api/database"
 	"wallforfry/esiee-api/models/aurion"
+	"wallforfry/esiee-api/pkg/group"
 	"wallforfry/esiee-api/pkg/unite"
 	"wallforfry/esiee-api/utils"
 )
@@ -50,7 +46,7 @@ func retrieveUnites(username string, password string) {
 	uniteRepo := unite.NewMongoRepository(database.Database)
 
 	for _, value := range c.Rows {
-		value.Code = transformGroup(value.Code).Unite
+		value.Code = group.CreateGroupFromAurionEntry("", "", value.Code).Unite
 		value.Code = strings.ReplaceAll(value.Code, "_", "-")
 
 		err = uniteRepo.Update(&unite.Unite{Code: value.Code, Label: value.Label})
@@ -85,21 +81,22 @@ func retrieveGroups(username string, password string) {
 	err = xml.Unmarshal(resp.Body(), &c)
 	utils.CheckError(logger, "Can't unmarshall aurion xml", err)
 
-	logger.Info("Writing BDE_MES_GROUPES.csv")
+	logger.Info("Storing user groups to database")
 
-	groupsFile, err := os.OpenFile("BDE_MES_GROUPES.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
-	utils.CheckError(logger, "Can't open BDE_MES_GROUPES.csv", err)
-	defer groupsFile.Close()
+	groupRepo := group.NewMongoRepository(database.Database)
 
-	writer := csv.NewWriter(groupsFile)
-	defer writer.Flush()
+	var groups []group.Group
 
-	err = writer.Write([]string{"login.Individu", "Coordonnée.Coordonnée", "Code.Groupe"})
-	utils.CheckError(logger, "Cannot write to file", err)
+	if len(c.Rows) > 0 {
+		_ = groupRepo.Dump()
+		for _, value := range c.Rows {
+			g := group.CreateGroupFromAurionEntry(value.Login, value.Mail, value.Group)
+			groups = append(groups, g)
+			utils.CheckError(logger, "Cannot create group : "+value.Group+" for user : "+value.Group, err)
+		}
 
-	for _, value := range c.Rows {
-		err := writer.Write(value.CSV())
-		utils.CheckError(logger, "Cannot write to file", err)
+		err = groupRepo.StoreMany(groups)
+		utils.CheckError(logger, "Cannot store groups to database", err)
 	}
 }
 
@@ -111,48 +108,13 @@ func Aurion() {
 	retrieveUnites(username, password)
 }
 
-func transformGroup(aurionFormat string) aurion.GroupEntry {
-	adeFormat := aurionFormat
+func GetUserGroups(username string) []group.Group {
 
-	yearRe := regexp.MustCompile(`^\d\d_`)
-	adeFormat = yearRe.ReplaceAllString(adeFormat, "")
+	groupRepo := group.NewMongoRepository(database.Database)
 
-	promoRe := regexp.MustCompile(`^\w{1,4}_`)
-	adeFormat = promoRe.ReplaceAllString(adeFormat, "")
-
-	uniteRe := regexp.MustCompile(`^([^_]*)_([^_]*)_(.*)`)
-	result := uniteRe.FindStringSubmatch(adeFormat)
-	if len(result) == 0 {
-		return aurion.GroupEntry{Unite: adeFormat, Groups: []string{}}
-	}
-
-	unite := fmt.Sprintf("%s-%s", result[1], result[2])
-	return aurion.GroupEntry{Unite: unite, Groups: result[3:]}
-}
-
-func GetUserGroups(username string) []aurion.GroupEntry {
-	var groups []aurion.GroupEntry
-
-	groupsFile, err := os.OpenFile("BDE_MES_GROUPES.csv", os.O_RDONLY, os.ModePerm)
-	utils.CheckError(logger, "Can't open BDE_MES_GROUPES.csv", err)
-	defer groupsFile.Close()
-
-	reader := csv.NewReader(groupsFile)
-
-	_, err = reader.Read()
-	utils.CheckError(logger, "Error reading BDE_MES_GROUPES.csv", err)
-
-	for i := 0; ; i = i + 1 {
-		record, err := reader.Read()
-		if err == io.EOF {
-			break // reached end of the file
-		}
-		utils.CheckError(logger, "Error reading BDE_MES_GROUPES.csv", err)
-
-		if record[0] == username || record[1] == username {
-			groups = append(groups, transformGroup(record[2]))
-			//fmt.Printf("Row %d : %v \n", i, record)
-		}
+	groups, err := groupRepo.FindByUsername(username)
+	if err != nil {
+		logger.Fatal("Can't retrieve groups for : " + username)
 	}
 	return groups
 }

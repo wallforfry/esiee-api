@@ -185,7 +185,7 @@ func getICS(context *gin.Context) {
 // @Param mail path string true "Username or e-mail"
 // @Accept json
 // @Produce json
-// @Success 200 {array} aurion.GroupEntry "List of groups"
+//// @Success 200 {array} group.Group "List of groups"
 // @Router /v2/groups/{mail} [get]
 func getGroups(context *gin.Context) {
 	username := context.Param("mail")

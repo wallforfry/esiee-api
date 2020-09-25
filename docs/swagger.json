@@ -365,7 +365,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/aurion.GroupEntry"
+                                "$ref": "#/definitions/group.Group"
                             }
                         }
                     }
@@ -499,16 +499,25 @@
                 }
             }
         },
-        "aurion.GroupEntry": {
+        "group.Group": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "groups": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
+                "id": {
+                    "type": "string"
+                },
                 "unite": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
