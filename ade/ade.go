@@ -29,57 +29,61 @@ func DownloadXml() {
 		Get(url)
 	utils.CheckError(logger, "Can't connect to ADE", err)
 
-	pat := regexp.MustCompile(`id=\"(.*)\"`)
-	session_id := pat.FindStringSubmatch(resp.String())[1]
+	if resp.StatusCode() == 200 {
+		pat := regexp.MustCompile(`id=\"(.*)\"`)
+		session_id := pat.FindStringSubmatch(resp.String())[1]
 
-	logger.Info("Setting ADE project id")
-	url = baseUrl + "?sessionId=" + session_id + "&function=setProject&projectId=" + strconv.Itoa(projectId)
+		logger.Info("Setting ADE project id")
+		url = baseUrl + "?sessionId=" + session_id + "&function=setProject&projectId=" + strconv.Itoa(projectId)
 
-	resp, err = client.R().
-		EnableTrace().
-		Get(url)
-	utils.CheckError(logger, "Can't set ADE project id", err)
+		resp, err = client.R().
+			EnableTrace().
+			Get(url)
+		utils.CheckError(logger, "Can't set ADE project id", err)
 
-	logger.Info("Retrieving ADE xml file")
-	url = baseUrl + "?sessionId=" + session_id + "&function=getEvents&tree=true&detail=8"
+		logger.Info("Retrieving ADE xml file")
+		url = baseUrl + "?sessionId=" + session_id + "&function=getEvents&tree=true&detail=8"
 
-	resp, err = client.R().
-		EnableTrace().
-		Get(url)
-	utils.CheckError(logger, "Can't retrieve ADE xml", err)
+		resp, err = client.R().
+			EnableTrace().
+			Get(url)
+		utils.CheckError(logger, "Can't retrieve ADE xml", err)
 
-	var events Events
-	logger.Info("Unmarshalling xml")
-	err = xml.Unmarshal(resp.Body(), &events)
-	utils.CheckError(logger, "Can't unmarshall ade.xml", err)
+		var events Events
+		logger.Info("Unmarshalling xml")
+		err = xml.Unmarshal(resp.Body(), &events)
+		utils.CheckError(logger, "Can't unmarshall ade.xml", err)
 
-	var calendar []event.Event
+		var calendar []event.Event
 
-	logger.Info("Convert event format")
+		logger.Info("Convert event format")
 
-	if len(events.Events) > 0 {
-		for _, e := range events.Events {
-			calendar = append(calendar, e.ToEventAde())
+		if len(events.Events) > 0 {
+			for _, e := range events.Events {
+				calendar = append(calendar, e.ToEventAde())
+			}
+
+			eventRepo := event.NewMongoRepository(database.Database)
+
+			logger.Info("Store events in database")
+			err = eventRepo.Dump()
+			utils.CheckError(logger, "Can't dump events database", err)
+			err = eventRepo.StoreMany(calendar)
+			utils.CheckError(logger, "Can't store events to database", err)
+		} else {
+			logger.Error("Events are not stored")
 		}
 
-		eventRepo := event.NewMongoRepository(database.Database)
+		logger.Info("Disconnecting from ADE")
+		url = baseUrl + "?function=disconnect"
 
-		logger.Info("Store events in database")
-		err = eventRepo.Dump()
-		utils.CheckError(logger, "Can't dump events database", err)
-		err = eventRepo.StoreMany(calendar)
-		utils.CheckError(logger, "Can't store events to database", err)
+		resp, err = client.R().
+			EnableTrace().
+			Get(url)
+		utils.CheckError(logger, "Can't disconnect from ADE", err)
 	} else {
-		logger.Error("Events are not stored")
+		logger.Error("Error while connecting to planif.esiee.fr..")
 	}
-
-	logger.Info("Disconnecting from ADE")
-	url = baseUrl + "?function=disconnect"
-
-	resp, err = client.R().
-		EnableTrace().
-		Get(url)
-	utils.CheckError(logger, "Can't disconnect from ADE", err)
 
 }
 

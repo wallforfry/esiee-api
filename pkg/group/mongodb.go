@@ -43,7 +43,7 @@ func (r *repo) FindByUnite(code string) (*Group, error) {
 
 func (r *repo) FindByUsername(username string) ([]Group, error) {
 	var Groups []Group
-	cursor, err := r.collection.Find(context.TODO(), bson.M{"username": username})
+	cursor, err := r.collection.Find(context.TODO(), bson.M{"$or": []bson.M{bson.M{"username": username}, bson.M{"email": username}}})
 
 	if err != nil {
 		return nil, err
