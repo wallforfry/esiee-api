@@ -10,7 +10,7 @@ import (
 
 func EventsToICS(events []ade.EventAde) *ics.Calendar {
 	//Load timezone
-	loc, err := time.LoadLocation("Europe/Paris")
+	loc, err := time.LoadLocation("UTC")
 	if err != nil {
 		panic(err.Error())
 	}
