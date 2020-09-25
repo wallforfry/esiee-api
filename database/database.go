@@ -4,6 +4,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"strconv"
 	"wallforfry/esiee-api/utils"
 )
 
@@ -13,7 +14,7 @@ var Database = &mongo.Database{}
 
 func CreateMongoDatabase(host string, port int, database string, username string, password string) {
 	// Set client options
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017").
+	clientOptions := options.Client().ApplyURI("mongodb://" + host + ":" + strconv.Itoa(port)).
 		SetAuth(options.Credential{
 			AuthSource: "esiee-api",
 			Username:   username,

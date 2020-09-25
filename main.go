@@ -22,12 +22,11 @@ func updateLocalCache() {
 	logger.Info("Updating local cache")
 	aurion.Aurion()
 	ade.DownloadXml()
-	//ade.XmlToJson()
 	logger.Info("Cache is up-to-date")
 }
 
 // @title ESIEE API
-// @version 0.6.2
+// @version 0.7.0
 // @description API pour ade et aurion
 
 // @host ade.wallforfry.fr
