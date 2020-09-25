@@ -219,7 +219,7 @@ func getEventFilterByUnite(context *gin.Context) {
 // @Param name path string true "Unite Code"
 // @Accept json
 // @Produce json
-// @Success 200 {array} aurion.Unite "Unite informations"
+// @Success 200 {array} unite.Unite "Unite informations"
 // @Router /v2/unite/{name} [get]
 func getUniteInfo(context *gin.Context) {
 	name := context.Param("name")

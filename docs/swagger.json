@@ -401,7 +401,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/aurion.Unite"
+                                "$ref": "#/definitions/unite.Unite"
                             }
                         }
                     }
@@ -513,10 +513,13 @@
                 }
             }
         },
-        "aurion.Unite": {
+        "unite.Unite": {
             "type": "object",
             "properties": {
                 "code": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "label": {

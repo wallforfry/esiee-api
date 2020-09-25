@@ -11,7 +11,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"wallforfry/esiee-api/database"
 	"wallforfry/esiee-api/models/aurion"
+	"wallforfry/esiee-api/pkg/unite"
 	"wallforfry/esiee-api/utils"
 )
 
@@ -43,22 +45,17 @@ func retrieveUnites(username string, password string) {
 	err = xml.Unmarshal(resp.Body(), &c)
 	utils.CheckError(logger, "Can't unmarshall aurion xml", err)
 
-	logger.Info("Writing BDE_UNITES.csv")
+	logger.Info("Saving unites to database")
 
-	groupsFile, err := os.OpenFile("BDE_UNITES.csv", os.O_RDWR|os.O_CREATE, os.ModePerm)
-	utils.CheckError(logger, "Can't open BDE_UNITES.csv", err)
-	defer groupsFile.Close()
-
-	writer := csv.NewWriter(groupsFile)
-	defer writer.Flush()
-
-	err = writer.Write([]string{"Code.Unité", "Libellé.Unité"})
-	utils.CheckError(logger, "Cannot write to file", err)
+	uniteRepo := unite.NewMongoRepository(database.Database)
 
 	for _, value := range c.Rows {
 		value.Code = transformGroup(value.Code).Unite
-		err := writer.Write(value.CSV())
-		utils.CheckError(logger, "Cannot write to file", err)
+		value.Code = strings.ReplaceAll(value.Code, "_", "-")
+
+		err = uniteRepo.Update(&unite.Unite{Code: value.Code, Label: value.Label})
+		logger.Debug("Store " + value.Code + " : " + value.Label)
+		utils.CheckError(logger, "Cannot store unite \""+value.Code+"\" to database", err)
 	}
 }
 
@@ -166,28 +163,12 @@ func GetUnites() {
 	retrieveUnites(username, password)
 }
 
-func GetUnite(code string) aurion.Unite {
-	groupsFile, err := os.OpenFile("BDE_UNITES.csv", os.O_RDONLY, os.ModePerm)
-	utils.CheckError(logger, "Can't open BDE_UNITES.csv", err)
-	defer groupsFile.Close()
-
-	reader := csv.NewReader(groupsFile)
-	reader.LazyQuotes = true
-
-	_, err = reader.Read()
-	utils.CheckError(logger, "Error reading BDE_UNITES.csv", err)
-
-	for i := 0; ; i = i + 1 {
-		record, err := reader.Read()
-		if err == io.EOF {
-			break // reached end of the file
-		}
-		utils.CheckError(logger, "Error reading BDE_UNITES.csv", err)
-
-		convertedCode := strings.ReplaceAll(record[0], "_", "-")
-		if convertedCode == code {
-			return aurion.Unite{Code: convertedCode, Label: record[1]}
-		}
+func GetUnite(code string) unite.Unite {
+	uniteRepo := unite.NewMongoRepository(database.Database)
+	convertedCode := strings.ReplaceAll(code, "_", "-")
+	result, err := uniteRepo.FindByCode(convertedCode)
+	if err != nil {
+		return unite.Unite{Code: convertedCode, Label: "Unknown"}
 	}
-	return aurion.Unite{Code: code, Label: code}
+	return *result
 }

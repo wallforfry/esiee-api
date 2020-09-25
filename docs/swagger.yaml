@@ -68,9 +68,11 @@ definitions:
       unite:
         type: string
     type: object
-  aurion.Unite:
+  unite.Unite:
     properties:
       code:
+        type: string
+      id:
         type: string
       label:
         type: string
@@ -340,7 +342,7 @@ paths:
           description: Unite informations
           schema:
             items:
-              $ref: '#/definitions/aurion.Unite'
+              $ref: '#/definitions/unite.Unite'
             type: array
       summary: Get unite information
       tags:

@@ -19,7 +19,7 @@ require (
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.3
-	golang.org/x/net v0.0.0-20191009170851-d66e71096ffb // indirect
+	go.mongodb.org/mongo-driver v1.4.1
 	golang.org/x/tools v0.0.0-20191009213438-b090f1f24028 // indirect
 	gopkg.in/yaml.v2 v2.2.4 // indirect
 )

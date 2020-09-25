@@ -9,6 +9,7 @@ import (
 	"github.com/swaggo/gin-swagger"
 	"wallforfry/esiee-api/ade"
 	"wallforfry/esiee-api/aurion"
+	"wallforfry/esiee-api/database"
 	_ "wallforfry/esiee-api/docs"
 	"wallforfry/esiee-api/utils"
 )
@@ -32,14 +33,15 @@ func updateLocalCache() {
 // @host ade.wallforfry.fr
 // @BasePath /
 func main() {
+
 	/*inputString := flag.String("input-string", "", "A sample input string. (Required)")
-	flag.Parse()
+	  flag.Parse()
 
-	logger.Infof("Received inputString: %s", *inputString)
+	  logger.Infof("Received inputString: %s", *inputString)
 
-	for _, inputStringPart := range utils.SplitStringParameter(*inputString, ParameterValueSeparatorCharacter) {
-		logger.Infof("Parsed input value: %s", inputStringPart)
-	}*/
+	  for _, inputStringPart := range utils.SplitStringParameter(*inputString, ParameterValueSeparatorCharacter) {
+	  	logger.Infof("Parsed input value: %s", inputStringPart)
+	  }*/
 
 	viper.SetConfigName("config") // name of config file (without extension)
 	viper.SetConfigType("yaml")
@@ -52,6 +54,21 @@ func main() {
 	if !debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
+
+	database.CreateMongoDatabase(
+		viper.GetString("mongodb.host"),
+		viper.GetInt("mongodb.port"),
+		viper.GetString("mongodb.database"),
+		viper.GetString("mongodb.username"),
+		viper.GetString("mongodb.password"),
+	)
+
+	//uniteRepo := unite.NewMongoRepository(Database)
+	//result, err := uniteRepo.Store(&unite.Unite{Code: "IGI-101", Label: "Info 101"})
+	//if err == nil {
+	//    fmt.Println(result.String())
+	//}
+	//fmt.Println(err)
 
 	r := gin.Default()
 	r.Use(cors.Default())
