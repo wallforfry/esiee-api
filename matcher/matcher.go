@@ -3,39 +3,39 @@ package matcher
 import (
 	"wallforfry/esiee-api/ade"
 	"wallforfry/esiee-api/aurion"
-	adeModels "wallforfry/esiee-api/models/ade"
+	"wallforfry/esiee-api/pkg/event"
 	"wallforfry/esiee-api/utils"
 )
 
-func convertToOldFormat(events []adeModels.EventAde) []adeModels.OldFormat {
-	var olds []adeModels.OldFormat
-	for _, event := range events {
-		olds = append(olds, event.ToOldFormat())
+func convertToOldFormat(events []event.Event) []ade.OldFormat {
+	var olds []ade.OldFormat
+	for _, e := range events {
+		olds = append(olds, ade.FromNewFormat(e))
 	}
 	return olds
 }
 
-func GetOldFormatEvents(username string) []adeModels.OldFormat {
+func GetOldFormatEvents(username string) []ade.OldFormat {
 	return convertToOldFormat(GetEvents(username))
 }
 
-func GetEvents(username string) []adeModels.EventAde {
-	var events []adeModels.EventAde
+func GetEvents(username string) []event.Event {
+	var events []event.Event
 
 	allEvents := ade.GetEvents()
 	groups := aurion.GetUserGroups(username)
 
-	for _, event := range allEvents {
+	for _, e := range allEvents {
 		for _, group := range groups {
-			if event.Unite != group.Unite {
+			if e.Unite != group.Unite {
 				continue
 			}
-			inter := utils.Intersect(event.Trainees, group.Groups)
+			inter := utils.Intersect(e.Trainees, group.Groups)
 			if len(inter) == 0 {
 				continue
 			}
-			events = append(events, event)
-			//fmt.Printf("%s :: %s :::: %s : %s <== %s len == %d\n", event.Unite, group.Unite, event.Trainees, inter, group.Groups, len(inter))
+			events = append(events, e)
+			//fmt.Printf("%s :: %s :::: %s : %s <== %s len == %d\n", e.Unite, group.Unite, e.Trainees, inter, group.Groups, len(inter))
 		}
 	}
 

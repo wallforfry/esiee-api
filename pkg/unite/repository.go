@@ -7,6 +7,7 @@ type Reader interface {
 	FindByCode(code string) (*Unite, error)
 	FindByLabel(label string) (*Unite, error)
 	FindAll() ([]Unite, error)
+	Count() (int64, error)
 }
 
 type Writer interface {

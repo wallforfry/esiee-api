@@ -6,6 +6,7 @@ type Reader interface {
 	Find(id primitive.ObjectID) (*Group, error)
 	FindByUnite(unite string) (*Group, error)
 	FindByUsername(username string) ([]Group, error)
+	Count() (int64, error)
 }
 
 type Writer interface {

@@ -69,6 +69,10 @@ func (r *repo) FindAll() ([]Unite, error) {
 	return unites, nil
 }
 
+func (r *repo) Count() (int64, error) {
+	return r.collection.CountDocuments(context.TODO(), bson.M{})
+}
+
 func (r *repo) Update(unite *Unite) error {
 	upsert := true
 	_, err := r.collection.ReplaceOne(

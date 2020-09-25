@@ -1,4 +1,4 @@
-package group
+package event
 
 import (
 	"context"
@@ -13,14 +13,14 @@ type repo struct {
 }
 
 func NewMongoRepository(database *mongo.Database) Repository {
-	collection := database.Collection("groups")
+	collection := database.Collection("events")
 	return &repo{
 		collection: collection,
 	}
 }
 
-func (r *repo) Find(id primitive.ObjectID) (*Group, error) {
-	var result Group
+func (r *repo) Find(id primitive.ObjectID) (*Event, error) {
+	var result Event
 	err := r.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&result)
 
 	if err != nil {
@@ -30,52 +30,41 @@ func (r *repo) Find(id primitive.ObjectID) (*Group, error) {
 	return &result, nil
 }
 
-func (r *repo) FindByUnite(code string) (*Group, error) {
-	var result Group
-	err := r.collection.FindOne(context.TODO(), bson.M{"unite": code}).Decode(&result)
+func (r *repo) FindAll() ([]Event, error) {
+	var events []Event
+	cursor, err := r.collection.Find(context.TODO(), bson.M{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &result, nil
-}
-
-func (r *repo) FindByUsername(username string) ([]Group, error) {
-	var Groups []Group
-	cursor, err := r.collection.Find(context.TODO(), bson.M{"username": username})
+	err = cursor.All(context.TODO(), &events)
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = cursor.All(context.TODO(), &Groups)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return Groups, nil
+	return events, nil
 }
 
 func (r *repo) Count() (int64, error) {
 	return r.collection.CountDocuments(context.TODO(), bson.M{})
 }
 
-func (r *repo) Update(group *Group) error {
+func (r *repo) Update(event *Event) error {
 	upsert := true
 	_, err := r.collection.ReplaceOne(
 		context.TODO(),
-		bson.M{"username": group.Username, "unite": group.Unite},
-		group,
+		bson.M{"event_id": event.EventId},
+		event,
 		&options.ReplaceOptions{Upsert: &upsert},
 	)
 
 	return err
 }
 
-func (r *repo) Store(group *Group) (*primitive.ObjectID, error) {
-	insertResult, err := r.collection.InsertOne(context.TODO(), group)
+func (r *repo) Store(event *Event) (*primitive.ObjectID, error) {
+	insertResult, err := r.collection.InsertOne(context.TODO(), event)
 
 	if err != nil {
 		return nil, err
@@ -85,9 +74,9 @@ func (r *repo) Store(group *Group) (*primitive.ObjectID, error) {
 	return &id, nil
 }
 
-func (r *repo) StoreMany(groups []Group) error {
-	y := make([]interface{}, len(groups))
-	for i, v := range groups {
+func (r *repo) StoreMany(events []Event) error {
+	y := make([]interface{}, len(events))
+	for i, v := range events {
 		y[i] = v
 	}
 	_, err := r.collection.InsertMany(context.TODO(), y)

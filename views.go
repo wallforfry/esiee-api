@@ -7,9 +7,12 @@ import (
 	"strings"
 	"wallforfry/esiee-api/ade"
 	"wallforfry/esiee-api/aurion"
+	"wallforfry/esiee-api/database"
 	"wallforfry/esiee-api/ics"
 	"wallforfry/esiee-api/matcher"
-	ade2 "wallforfry/esiee-api/models/ade"
+	"wallforfry/esiee-api/pkg/event"
+	"wallforfry/esiee-api/pkg/group"
+	"wallforfry/esiee-api/pkg/unite"
 	"wallforfry/esiee-api/utils"
 )
 
@@ -36,16 +39,24 @@ func ping(c *gin.Context) {
 // @Success 200 {object} string "API informations"
 // @Router /status [get]
 func status(context *gin.Context) {
+	eventRepo := event.NewMongoRepository(database.Database)
+	eventCount, _ := eventRepo.Count()
+
+	uniteRepo := unite.NewMongoRepository(database.Database)
+	uniteCount, _ := uniteRepo.Count()
+
+	groupRepo := group.NewMongoRepository(database.Database)
+	groupCount, _ := groupRepo.Count()
+
 	context.JSON(200, gin.H{
 		"version":             viper.GetString("global.version"),
 		"uptime":              utils.Uptime().String(),
 		"refreshCacheEnabled": viper.GetBool("global.refreshCache"),
 		"refreshInterval":     viper.GetInt("global.refreshInterval"),
-		"files": gin.H{
-			"ade.xml":             utils.FileInfos("ade.xml"),
-			"calendar.json":       utils.FileInfos("calendar.json"),
-			"BDE_MES_GROUPES.csv": utils.FileInfos("BDE_MES_GROUPES.csv"),
-			"BDE_UNITES.csv":      utils.FileInfos("BDE_UNITES.csv"),
+		"database": gin.H{
+			"events": eventCount,
+			"unites": uniteCount,
+			"groups": groupCount,
 		},
 	})
 }
@@ -84,7 +95,7 @@ func postAgendaOld(context *gin.Context) {
 	username := context.PostForm("mail")
 	events := matcher.GetOldFormatEvents(username)
 	if events == nil {
-		events = []ade2.OldFormat{}
+		events = []ade.OldFormat{}
 	}
 	context.JSON(200, events)
 }
@@ -102,7 +113,7 @@ func postAgendaOldShort(context *gin.Context) {
 	username := context.PostForm("mail")
 	events := matcher.GetOldFormatEvents(username)
 	if events == nil {
-		events = []ade2.OldFormat{}
+		events = []ade.OldFormat{}
 	}
 	context.JSON(200, events)
 }
@@ -120,7 +131,7 @@ func getAgendaOld(context *gin.Context) {
 	username := context.Param("mail")
 	events := matcher.GetOldFormatEvents(username)
 	if events == nil {
-		events = []ade2.OldFormat{}
+		events = []ade.OldFormat{}
 	}
 	context.JSON(200, events)
 }
@@ -138,7 +149,7 @@ func getAgendaOldShort(context *gin.Context) {
 	username := context.Param("mail")
 	events := matcher.GetOldFormatEvents(username)
 	if events == nil {
-		events = []ade2.OldFormat{}
+		events = []ade.OldFormat{}
 	}
 	context.JSON(200, events)
 }
@@ -150,7 +161,7 @@ func getAgendaOldShort(context *gin.Context) {
 // @Param mail path string true "Username or e-mail"
 // @Accept json
 // @Produce json
-// @Success 200 {array} ade.EventAde "List of events"
+// @Success 200 {array} ade.Event "List of events"
 // @Router /v2/agenda/{mail} [get]
 func getAgenda(context *gin.Context) {
 	username := context.Param("mail")
@@ -199,11 +210,11 @@ func getGroups(context *gin.Context) {
 // @Param name path string true "Unite Code"
 // @Accept json
 // @Produce json
-// @Success 200 {array} ade.EventAde "List of events"
+// @Success 200 {array} ade.Event "List of events"
 // @Router /v2/events/{name} [get]
 func getEventFilterByUnite(context *gin.Context) {
 	name := context.Param("name")
-	var events []ade2.EventAde
+	var events []event.Event
 	for _, event := range ade.GetEvents() {
 		if event.Unite == name {
 			events = append(events, event)

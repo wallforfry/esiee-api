@@ -22,7 +22,7 @@ func updateLocalCache() {
 	logger.Info("Updating local cache")
 	aurion.Aurion()
 	ade.DownloadXml()
-	ade.XmlToJson()
+	//ade.XmlToJson()
 	logger.Info("Cache is up-to-date")
 }
 

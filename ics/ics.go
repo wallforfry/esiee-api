@@ -5,10 +5,10 @@ import (
 	ics "github.com/arran4/golang-ical"
 	"strings"
 	"time"
-	"wallforfry/esiee-api/models/ade"
+	"wallforfry/esiee-api/pkg/event"
 )
 
-func EventsToICS(events []ade.EventAde) *ics.Calendar {
+func EventsToICS(events []event.Event) *ics.Calendar {
 	//Load timezone
 	loc, err := time.LoadLocation("UTC")
 	if err != nil {

@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"wallforfry/esiee-api/database"
-	"wallforfry/esiee-api/models/aurion"
 	"wallforfry/esiee-api/pkg/group"
 	"wallforfry/esiee-api/pkg/unite"
 	"wallforfry/esiee-api/utils"
@@ -37,7 +36,7 @@ func retrieveUnites(username string, password string) {
 		logger.Errorf("Aurion Api answers with %s code", resp.StatusCode())
 	}
 
-	var c aurion.UniteTable
+	var c UniteTable
 	err = xml.Unmarshal(resp.Body(), &c)
 	utils.CheckError(logger, "Can't unmarshall aurion xml", err)
 
@@ -77,7 +76,7 @@ func retrieveGroups(username string, password string) {
 		logger.Errorf("Aurion Api answers with %s code", resp.StatusCode())
 	}
 
-	var c aurion.GroupTable
+	var c GroupTable
 	err = xml.Unmarshal(resp.Body(), &c)
 	utils.CheckError(logger, "Can't unmarshall aurion xml", err)
 

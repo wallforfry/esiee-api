@@ -293,7 +293,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/ade.EventAde"
+                                "$ref": "#/definitions/ade.Event"
                             }
                         }
                     }
@@ -329,7 +329,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/ade.EventAde"
+                                "$ref": "#/definitions/ade.Event"
                             }
                         }
                     }
@@ -410,65 +410,49 @@
         }
     },
     "definitions": {
-        "ade.EventAde": {
+        "ade.Event": {
             "type": "object",
             "properties": {
-                "classrooms": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "color": {
-                    "description": "r,g,b",
+                    "description": "color r,g,b",
                     "type": "string"
                 },
-                "created_at": {
+                "creation": {
                     "type": "string"
                 },
                 "date": {
                     "type": "string"
                 },
                 "duration": {
+                    "description": "hour quarters count duration",
                     "type": "integer"
                 },
-                "end_hour": {
+                "endHour": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "info": {
+                    "description": "info",
                     "type": "string"
                 },
-                "instructors": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "majors": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "lastUpdate": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "start_hour": {
-                    "type": "string"
-                },
-                "trainees": {
+                "resources": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/ade.Resource"
                     }
                 },
-                "unite": {
+                "startHour": {
                     "type": "string"
                 },
-                "unite_name": {
-                    "type": "string"
-                },
-                "updated_at": {
+                "xmlname": {
                     "type": "string"
                 }
             }
@@ -495,6 +479,20 @@
                     "type": "string"
                 },
                 "unite": {
+                    "type": "string"
+                }
+            }
+        },
+        "ade.Resource": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "xmlname": {
                     "type": "string"
                 }
             }

@@ -1,45 +1,35 @@
 basePath: /
 definitions:
-  ade.EventAde:
+  ade.Event:
     properties:
-      classrooms:
-        items:
-          type: string
-        type: array
       color:
-        description: r,g,b
+        description: color r,g,b
         type: string
-      created_at:
+      creation:
         type: string
       date:
         type: string
       duration:
+        description: hour quarters count duration
         type: integer
-      end_hour:
+      endHour:
+        type: string
+      id:
         type: string
       info:
+        description: info
         type: string
-      instructors:
-        items:
-          type: string
-        type: array
-      majors:
-        items:
-          type: string
-        type: array
+      lastUpdate:
+        type: string
       name:
         type: string
-      start_hour:
-        type: string
-      trainees:
+      resources:
         items:
-          type: string
+          $ref: '#/definitions/ade.Resource'
         type: array
-      unite:
+      startHour:
         type: string
-      unite_name:
-        type: string
-      updated_at:
+      xmlname:
         type: string
     type: object
   ade.OldFormat:
@@ -57,6 +47,15 @@ definitions:
       start:
         type: string
       unite:
+        type: string
+    type: object
+  ade.Resource:
+    properties:
+      category:
+        type: string
+      name:
+        type: string
+      xmlname:
         type: string
     type: object
   group.Group:
@@ -276,7 +275,7 @@ paths:
           description: List of events
           schema:
             items:
-              $ref: '#/definitions/ade.EventAde'
+              $ref: '#/definitions/ade.Event'
             type: array
       summary: Get user agenda
       tags:
@@ -300,7 +299,7 @@ paths:
           description: List of events
           schema:
             items:
-              $ref: '#/definitions/ade.EventAde'
+              $ref: '#/definitions/ade.Event'
             type: array
       summary: Get events of specific unite
       tags:
