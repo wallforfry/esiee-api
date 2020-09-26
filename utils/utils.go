@@ -77,20 +77,6 @@ func Intersect(a []string, b []string) []string {
 	return set
 }
 
-/*
-func Intersect(a interface{}, b interface{}) []interface{} {
-    set := make([]interface{}, 0)
-    av := reflect.ValueOf(a)
-
-    for i := 0; i < av.Len(); i++ {
-        el := av.Index(i).Interface()
-        if containsCaseInsensitive(b, el) {
-            set = append(set, el)
-        }
-    }
-    return set
-}*/
-
 func Difference(a, b []string) (diff []string) {
 	m := make(map[string]bool)
 

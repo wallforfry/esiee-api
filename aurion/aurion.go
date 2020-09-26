@@ -118,12 +118,6 @@ func GetUserGroups(username string) []group.Group {
 	return groups
 }
 
-func GetUnites() {
-	username := viper.GetString("aurion.username")
-	password := viper.GetString("aurion.password")
-	retrieveUnites(username, password)
-}
-
 func GetUnite(code string) unite.Unite {
 	uniteRepo := unite.NewMongoRepository(database.Database)
 	convertedCode := strings.ReplaceAll(code, "_", "-")
