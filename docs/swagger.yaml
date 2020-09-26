@@ -82,7 +82,7 @@ definitions:
       label:
         type: string
     type: object
-host: ade.wallforfry.fr
+host: localhost:8080
 info:
   contact: {}
   description: API pour ade et aurion
@@ -291,6 +291,10 @@ paths:
         in: path
         name: name
         required: true
+        type: string
+      - description: Group identifier
+        in: query
+        name: group
         type: string
       produces:
       - application/json

@@ -208,16 +208,25 @@ func getGroups(context *gin.Context) {
 // @Description Get all events of specific unite with its code
 // @Tags V2,Agenda
 // @Param name path string true "Unite Code"
+// @Param group query string false "Group identifier"
 // @Accept json
 // @Produce json
 // @Success 200 {array} ade.Event "List of events"
 // @Router /v2/events/{name} [get]
 func getEventFilterByUnite(context *gin.Context) {
 	name := context.Param("name")
+	group := context.QueryArray("group")
+
 	var events []event.Event
 	for _, event := range ade.GetEvents() {
 		if event.Unite == name {
-			events = append(events, event)
+			if len(group) > 0 {
+				if len(utils.Intersect(event.Trainees, group)) > 0 {
+					events = append(events, event)
+				}
+			} else {
+				events = append(events, event)
+			}
 		}
 	}
 	context.JSON(200, events)

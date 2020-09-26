@@ -7,7 +7,7 @@
         "license": {},
         "version": "0.7.0"
     },
-    "host": "ade.wallforfry.fr",
+    "host": "localhost:8080",
     "basePath": "/",
     "paths": {
         "/agenda": {
@@ -321,6 +321,12 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Group identifier",
+                        "name": "group",
+                        "in": "query"
                     }
                 ],
                 "responses": {
