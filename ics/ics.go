@@ -20,7 +20,7 @@ func EventsToICS(events []event.Event) *ics.Calendar {
 	calendar.SetMethod(ics.MethodPublish)
 
 	for _, event := range events {
-		calEvent := calendar.AddEvent(event.Name)
+		calEvent := calendar.AddEvent(event.EventId)
 
 		createDate, _ := time.Parse("01/02/2006 15:04", event.CreatedAt)
 		calEvent.SetCreatedTime(createDate)
