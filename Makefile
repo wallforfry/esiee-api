@@ -26,6 +26,11 @@ build-docker:
 	@docker build -t wallforfry/esiee-api:$(shell $(MAKE) version) -f Dockerfile .
 	@docker tag wallforfry/esiee-api:$(shell $(MAKE) version) wallforfry/esiee-api:latest
 
+.PHONY: push-docker # Build Docker image
+push-docker:
+	@docker push wallforfry/esiee-api:$(shell $(MAKE) version)
+	@docker push wallforfry/esiee-api:latest
+
 .PHONY: doc # Generate doc
 doc:
 	@swag init
