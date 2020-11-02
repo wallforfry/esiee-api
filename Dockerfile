@@ -3,7 +3,8 @@
 ############################
 
 # golang:1.12.7-alpine
-FROM golang@sha256:1121c345b1489bb5e8a9a65b612c8fed53c175ce72ac1c76cf12bbfc35211310 as builder
+#FROM golang@sha256:1121c345b1489bb5e8a9a65b612c8fed53c175ce72ac1c76cf12bbfc35211310 as builder
+FROM golang:1.13-alpine as builder
 
 # Install git + SSL ca certificates:
 # - Git is required for fetching the dependencies
