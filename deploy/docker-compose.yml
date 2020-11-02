@@ -1,0 +1,14 @@
+version: '3.3'
+services:
+    app:
+        image: wallforfry/esiee-api:latest
+        logging:
+            driver: json-file
+    mongodb:
+        image: bitnami/mongodb:latest
+        environment:
+            MONGODB_DATABASE: esiee-api
+            MONGODB_PASSWORD: ipa-eesie
+            MONGODB_USERNAME: esiee-api
+        ports:
+          - 27017:27017

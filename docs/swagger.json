@@ -5,9 +5,9 @@
         "title": "ESIEE API",
         "contact": {},
         "license": {},
-        "version": "0.7.0"
+        "version": "0.7.1"
     },
-    "host": "localhost:8080",
+    "host": "ade.wallforfry.fr",
     "basePath": "/",
     "paths": {
         "/agenda": {

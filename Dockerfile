@@ -18,8 +18,6 @@ RUN go mod download
 RUN go mod verify
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o $GOPATH/bin/main
 RUN chmod +x $GOPATH/bin/main
-RUN touch ade.xml calendar.json BDE_MES_GROUPES.csv BDE_UNITES.csv
-RUN chown daemon: ade.xml calendar.json BDE_MES_GROUPES.csv BDE_UNITES.csv
 
 
 ###############################
@@ -29,10 +27,6 @@ RUN chown daemon: ade.xml calendar.json BDE_MES_GROUPES.csv BDE_UNITES.csv
 FROM scratch
 
 COPY --from=builder /go/src/application/config.yaml /
-COPY --from=builder /go/src/application/ade.xml /
-COPY --from=builder /go/src/application/calendar.json /
-COPY --from=builder /go/src/application/BDE_MES_GROUPES.csv /
-COPY --from=builder /go/src/application/BDE_UNITES.csv /
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /etc/passwd /etc/passwd

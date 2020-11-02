@@ -82,13 +82,13 @@ definitions:
       label:
         type: string
     type: object
-host: localhost:8080
+host: ade.wallforfry.fr
 info:
   contact: {}
   description: API pour ade et aurion
   license: {}
   title: ESIEE API
-  version: 0.7.0
+  version: 0.7.1
 paths:
   /agenda:
     post:
