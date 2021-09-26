@@ -1,7 +1,7 @@
-Go project bootstrap
+ESIEE API
 ====================
 
-A sample [Go](https://golang.org) bootstrap project.
+This is the unofficial API for ESIEE Paris services (ADE, Aurion, etc.)
 
 ## Versioning
 
@@ -13,19 +13,25 @@ The `Makefile` contains all neccessary goals for build steps.
 
 Simply type in `make help` to list all available goals.
 
+To build and deploy :
+- Increase the version number in `VERSION`
+- `make build-docker`
+- `docker login`
+- `make push-docker`
+
 ## Running
 
-Simply run the application using the mandatory parameter: `./my-app --input-string=First,Second,Third`
+Create a config.yaml
+Simply run the application `./esiee-api`
 
 The application then prints the following output:
 
 ```
-2018-06-06 16:09:51.138 INFO (main.go:30) schema-version-collector Received inputString: First,Second,Third
-2018-06-06 16:09:51.138 INFO (main.go:33) schema-version-collector Parsed input value: First
-2018-06-06 16:09:51.138 INFO (main.go:33) schema-version-collector Parsed input value: Second
-2018-06-06 16:09:51.138 INFO (main.go:33) schema-version-collector Parsed input value: Third
+esiee-api git:(master) ✗ ./esiee-api     
+2021-09-26 11:42:06.590 INFO (main.go:116) main-logger Running in debug : false
+2021-09-26 11:42:06.591 INFO (main.go:120) main-logger Starting Gocron
 ```
 
 ## Building and running in Docker
 
-Build the application using `make build-docker` and run the following command: `docker run my-organization/my-app:latest --input-string=First,Second,Third`
+Build the application using `make build-docker` and run the following command: `docker run -d -p 8080:8080 wallforfry/esiee-api:latest`
