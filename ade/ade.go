@@ -2,14 +2,15 @@ package ade
 
 import (
 	"encoding/xml"
-	"github.com/go-resty/resty/v2"
-	"github.com/spf13/viper"
 	"regexp"
 	"strconv"
 	"time"
 	"wallforfry/esiee-api/database"
 	"wallforfry/esiee-api/pkg/event"
 	"wallforfry/esiee-api/utils"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/spf13/viper"
 )
 
 var logger = utils.InitLogger("ade-logger")
@@ -65,7 +66,7 @@ func DownloadXml() {
 
 			eventRepo := event.NewMongoRepository(database.Database)
 
-			logger.Info("Store events in database")
+			logger.Infof("Store %d events in database", len(events.Events))
 			err = eventRepo.Dump()
 			utils.CheckError(logger, "Can't dump events database", err)
 			err = eventRepo.StoreMany(calendar)

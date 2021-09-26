@@ -2,14 +2,15 @@ package aurion
 
 import (
 	"encoding/xml"
-	"github.com/go-resty/resty/v2"
-	"github.com/spf13/viper"
 	"strconv"
 	"strings"
 	"wallforfry/esiee-api/database"
 	"wallforfry/esiee-api/pkg/group"
 	"wallforfry/esiee-api/pkg/unite"
 	"wallforfry/esiee-api/utils"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/spf13/viper"
 )
 
 var logger = utils.InitLogger("aurion-parser")
@@ -39,8 +40,7 @@ func retrieveUnites(username string, password string) {
 	var c UniteTable
 	err = xml.Unmarshal(resp.Body(), &c)
 	utils.CheckError(logger, "Can't unmarshall aurion xml", err)
-
-	logger.Info("Saving unites to database")
+	logger.Infof("Saving %d unites to database", len(c.Rows))
 
 	uniteRepo := unite.NewMongoRepository(database.Database)
 
@@ -80,7 +80,7 @@ func retrieveGroups(username string, password string) {
 	err = xml.Unmarshal(resp.Body(), &c)
 	utils.CheckError(logger, "Can't unmarshall aurion xml", err)
 
-	logger.Info("Storing user groups to database")
+	logger.Infof("Saving %d user groups to database", len(c.Rows))
 
 	groupRepo := group.NewMongoRepository(database.Database)
 
