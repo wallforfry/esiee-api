@@ -26,7 +26,7 @@ func updateLocalCache() {
 }
 
 // @title ESIEE API
-// @version 0.7.2
+// @version 0.7.3
 // @description API pour ade et aurion
 
 // @host ade.wallforfry.fr
